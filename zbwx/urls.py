@@ -24,5 +24,8 @@ urlpatterns = [
     path('index/', views.index),
     path('login/', views.login),
     path('sigup/', views.sigup),
+    path('addrepairtable/', views.addrepairtable)
+
+
 
 ]
