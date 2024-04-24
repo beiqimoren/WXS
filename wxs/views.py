@@ -1,5 +1,6 @@
 import json
 
+from django.forms import model_to_dict
 from django.http import JsonResponse
 from django.shortcuts import render, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -14,25 +15,12 @@ def index(request):
     return HttpResponse('这是首页！')
 
 
-# 用户登录验证
-# def login(request):
-#     username = request.GET['username']
-#     passored = request.GET['password']
-#     obj=models.UserInfo.objects.filter(username=username).first()
-#     response = HttpResponse("Hello, World!")
-#     response.status_code =222
-#     if obj.password == passored:
-#         response = HttpResponse(obj.id)
-#         response.status_code = 111
-#     return response
-
-
 def login(request):
     username = request.GET['username']
     password = request.GET['password']
-    if(models.UserInfo.objects.filter(username=username).exists()):
+    if (models.UserInfo.objects.filter(username=username).exists()):
         obj = models.UserInfo.objects.filter(username=username).first()
-        if(obj.password == password):
+        if (obj.password == password):
             return JsonResponse({
                 'state': "成功",
                 'userID': obj.id
@@ -63,7 +51,6 @@ def sigup(request):
     })
 
 
-
 @require_http_methods(["POST"])
 @csrf_exempt
 def addrepairtable(request):
@@ -85,3 +72,19 @@ def addrepairtable(request):
         return JsonResponse({'status': 'success', 'data': data})
     except json.JSONDecodeError:
         return JsonResponse({'status': 'error', 'message': 'Invalid JSON'}, status=400)
+
+
+def select_repair_byuserID(request):
+    userID = int(request.GET['userID'])
+    if models.RepairTable.objects.filter(userID=userID).exists():
+        data={}
+        data['repairTable'] = list((models.RepairTable.objects.filter(userID=userID)).values())
+        return JsonResponse(data)
+    return HttpResponse("没有数据")
+
+def select_repair_byid(request):
+    id = int(request.GET['id'])
+    if models.RepairTable.objects.filter(id=id).exists():
+        result = model_to_dict(models.RepairTable.objects.get(id=id))
+        return HttpResponse(json.dumps(result), content_type="application/json")
+

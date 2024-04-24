@@ -24,7 +24,10 @@ urlpatterns = [
     path('index/', views.index),
     path('login/', views.login),
     path('sigup/', views.sigup),
-    path('addrepairtable/', views.addrepairtable)
+    path('addrepairtable/', views.addrepairtable),
+    path('select_repair_byuserID/', views.select_repair_byuserID),
+    path('select_repair_byid/', views.select_repair_byid),
+
 
 
 
