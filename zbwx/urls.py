@@ -25,8 +25,11 @@ urlpatterns = [
     path('login/', views.login),
     path('sigup/', views.sigup),
     path('addrepairtable/', views.addrepairtable),
+    path('addsupporttable/', views.addsupporttable),
     path('select_repair_byuserID/', views.select_repair_byuserID),
     path('select_repair_byid/', views.select_repair_byid),
+    path('select_support_byuserID/', views.select_support_byuserID)
+
 
 
 

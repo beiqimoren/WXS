@@ -16,8 +16,8 @@ def index(request):
 
 
 def login(request):
-    username = request.GET['username']
-    password = request.GET['password']
+    username = request.GET['param']
+    password = request.GET['param1']
     if (models.UserInfo.objects.filter(username=username).exists()):
         obj = models.UserInfo.objects.filter(username=username).first()
         if (obj.password == password):
@@ -37,8 +37,8 @@ def login(request):
 
 # 注册用户
 def sigup(request):
-    username = request.GET['username']
-    password = request.GET['password']
+    username = request.GET['param']
+    password = request.GET['param1']
     if models.UserInfo.objects.filter(username=username).exists():
         return JsonResponse({
             'state': "该账号已注册",
@@ -49,7 +49,6 @@ def sigup(request):
         'state': "注册成功",
         'username': 0
     })
-
 
 @require_http_methods(["POST"])
 @csrf_exempt
@@ -69,22 +68,51 @@ def addrepairtable(request):
                                              notes=data.get("notes"),
                                              state=data.get("state")):
             return HttpResponse("成功")
-        return JsonResponse({'status': 'success', 'data': data})
+        return HttpResponse("失败")
     except json.JSONDecodeError:
         return JsonResponse({'status': 'error', 'message': 'Invalid JSON'}, status=400)
-
-
+@require_http_methods(["POST"])
+@csrf_exempt
+def addsupporttable(request):
+    try:
+        data = json.loads(request.body)
+        if models.SupportTable.objects.create(userID=data.get("userID"),
+                                             date=data.get("date"),
+                                             province=data.get("province"),
+                                             city=data.get("city"),
+                                             address=data.get("address"),
+                                             thing=data.get("thing"),
+                                             contact=data.get("contact"),
+                                             phone=data.get("phone"),
+                                             unit=data.get("unit"),
+                                             notes=data.get("notes"),
+                                             state=data.get("state")):
+            return HttpResponse("成功")
+        return HttpResponse("失败")
+    except json.JSONDecodeError:
+        return JsonResponse({'status': 'error', 'message': 'Invalid JSON'}, status=400)
 def select_repair_byuserID(request):
-    userID = int(request.GET['userID'])
+    userID = int(request.GET['param'])
+    data = {}
     if models.RepairTable.objects.filter(userID=userID).exists():
-        data={}
         data['repairTable'] = list((models.RepairTable.objects.filter(userID=userID)).values())
         return JsonResponse(data)
-    return HttpResponse("没有数据")
+    data['repairTable'] ="没有数据"
+    return JsonResponse(data)
 
 def select_repair_byid(request):
     id = int(request.GET['id'])
     if models.RepairTable.objects.filter(id=id).exists():
         result = model_to_dict(models.RepairTable.objects.get(id=id))
         return HttpResponse(json.dumps(result), content_type="application/json")
+
+
+def select_support_byuserID(request):
+    userID = int(request.GET['param'])
+    data = {}
+    if models.SupportTable.objects.filter(userID=userID).exists():
+        data['supportTable'] = list((models.SupportTable.objects.filter(userID=userID)).values())
+        return JsonResponse(data)
+    data['supportTable'] = "没有数据"
+    return JsonResponse(data)
 
