@@ -1,11 +1,11 @@
 from django.db import models
-
+# 用户信息
 # Create your models here.
 class UserInfo(models.Model):
     username = models.CharField(max_length=32)
     password = models.CharField(max_length=64)
 
-
+# 装备报修单
 class RepairTable(models.Model):
     userID = models.IntegerField()
     equipment= models.CharField(max_length=64)
@@ -19,7 +19,7 @@ class RepairTable(models.Model):
     unit = models.CharField(max_length=64)
     notes = models.CharField(max_length=64)
     state = models.CharField(max_length=32)
-
+# 技术支援申请单
 class SupportTable(models.Model):
     userID = models.IntegerField()
     date= models.CharField(max_length=64)
@@ -31,4 +31,12 @@ class SupportTable(models.Model):
     phone = models.CharField(max_length=32)
     unit = models.CharField(max_length=64)
     notes = models.CharField(max_length=64)
+    state = models.CharField(max_length=32)
+# 消息
+class MyMsg(models.Model):
+    adminID = models.IntegerField()
+    userID = models.IntegerField()
+    date = models.CharField(max_length=32)
+    title = models.CharField(max_length=128)
+    content = models.CharField(max_length=256)
     state = models.CharField(max_length=32)

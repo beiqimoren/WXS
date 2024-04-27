@@ -116,3 +116,12 @@ def select_support_byuserID(request):
     data['supportTable'] = "没有数据"
     return JsonResponse(data)
 
+
+def getmsg(request):
+    userID = int(request.GET['param'])
+    data = {}
+    if models.MyMsg.objects.filter(userID=userID).exists():
+        data['mymsg'] = list((models.MyMsg.objects.filter(userID=userID)).values())
+        return JsonResponse(data)
+    data['mymsg'] = "没有数据"
+    return JsonResponse(data)

@@ -28,7 +28,8 @@ urlpatterns = [
     path('addsupporttable/', views.addsupporttable),
     path('select_repair_byuserID/', views.select_repair_byuserID),
     path('select_repair_byid/', views.select_repair_byid),
-    path('select_support_byuserID/', views.select_support_byuserID)
+    path('select_support_byuserID/', views.select_support_byuserID),
+    path('getmsg/', views.getmsg)
 
 
 
