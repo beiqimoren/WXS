@@ -31,8 +31,4 @@ urlpatterns = [
     path('select_support_byuserID/', views.select_support_byuserID),
     path('getmsg/', views.getmsg)
 
-
-
-
-
 ]
