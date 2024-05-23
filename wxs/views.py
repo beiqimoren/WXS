@@ -50,6 +50,7 @@ def sigup(request):
         'username': 0
     })
 
+
 @require_http_methods(["POST"])
 @csrf_exempt
 def addrepairtable(request):
@@ -71,34 +72,39 @@ def addrepairtable(request):
         return HttpResponse("失败")
     except json.JSONDecodeError:
         return JsonResponse({'status': 'error', 'message': 'Invalid JSON'}, status=400)
+
+
 @require_http_methods(["POST"])
 @csrf_exempt
 def addsupporttable(request):
     try:
         data = json.loads(request.body)
         if models.SupportTable.objects.create(userID=data.get("userID"),
-                                             date=data.get("date"),
-                                             province=data.get("province"),
-                                             city=data.get("city"),
-                                             address=data.get("address"),
-                                             thing=data.get("thing"),
-                                             contact=data.get("contact"),
-                                             phone=data.get("phone"),
-                                             unit=data.get("unit"),
-                                             notes=data.get("notes"),
-                                             state=data.get("state")):
+                                              date=data.get("date"),
+                                              province=data.get("province"),
+                                              city=data.get("city"),
+                                              address=data.get("address"),
+                                              thing=data.get("thing"),
+                                              contact=data.get("contact"),
+                                              phone=data.get("phone"),
+                                              unit=data.get("unit"),
+                                              notes=data.get("notes"),
+                                              state=data.get("state")):
             return HttpResponse("成功")
         return HttpResponse("失败")
     except json.JSONDecodeError:
         return JsonResponse({'status': 'error', 'message': 'Invalid JSON'}, status=400)
+
+
 def select_repair_byuserID(request):
     userID = int(request.GET['param'])
     data = {}
     if models.RepairTable.objects.filter(userID=userID).exists():
         data['repairTable'] = list((models.RepairTable.objects.filter(userID=userID)).values())
         return JsonResponse(data)
-    data['repairTable'] ="没有数据"
+    data['repairTable'] = "没有数据"
     return JsonResponse(data)
+
 
 def select_repair_byid(request):
     id = int(request.GET['id'])
@@ -124,4 +130,28 @@ def getmsg(request):
         data['mymsg'] = list((models.MyMsg.objects.filter(userID=userID)).values())
         return JsonResponse(data)
     data['mymsg'] = "没有数据"
+    return JsonResponse(data)
+
+@require_http_methods(["POST"])
+@csrf_exempt
+def addconsult(request):
+    try:
+        data = json.loads(request.body)
+        if models.MyConsult.objects.create(userID=data.get("userID"),
+                                           adminID=data.get("adminID"),
+                                           title=data.get("title"),
+                                           content=data.get("content")):
+            return HttpResponse("成功")
+        return HttpResponse("失败")
+    except json.JSONDecodeError:
+        return JsonResponse({'status': 'error', 'message': 'Invalid JSON'}, status=400)
+
+
+def getconsult(request):
+    userID = int(request.GET['param'])
+    data = {}
+    if models.MyConsult.objects.filter(userID=userID).exists():
+        data['myconsult'] = list((models.MyConsult.objects.filter(userID=userID)).values())
+        return JsonResponse(data)
+    data['myconsult'] = "没有数据"
     return JsonResponse(data)

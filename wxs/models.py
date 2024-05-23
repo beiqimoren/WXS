@@ -40,3 +40,9 @@ class MyMsg(models.Model):
     title = models.CharField(max_length=128)
     content = models.CharField(max_length=256)
     state = models.CharField(max_length=32)
+
+class MyConsult(models.Model):
+    adminID = models.IntegerField()
+    userID = models.IntegerField()
+    title = models.CharField(max_length=256)
+    contentlist = models.CharField(max_length=9999)
