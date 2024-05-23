@@ -155,3 +155,23 @@ def getconsult(request):
         return JsonResponse(data)
     data['myconsult'] = "没有数据"
     return JsonResponse(data)
+
+def getconsultbyID(request):
+    ID = int(request.GET['param'])
+    data = {}
+    if models.MyConsult.objects.filter(id=ID).exists():
+        data['myconsultbyID'] = list(models.MyConsult.objects.filter(id=ID).values())
+        return JsonResponse(data)
+    data['myconsultbyID'] = "没有数据"
+    return JsonResponse(data)
+
+@require_http_methods(["POST"])
+@csrf_exempt
+def updateconsult(request):
+    try:
+        data = json.loads(request.body)
+        if models.MyConsult.objects.filter(id=data.get("consultID")).update(contentlist=data.get("contentlist")):
+            return HttpResponse("成功")
+        return HttpResponse("失败")
+    except json.JSONDecodeError:
+        return JsonResponse({'status': 'error', 'message': 'Invalid JSON'}, status=400)

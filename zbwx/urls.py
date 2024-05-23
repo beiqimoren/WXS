@@ -31,6 +31,9 @@ urlpatterns = [
     path('select_repair_byid/', views.select_repair_byid),
     path('select_support_byuserID/', views.select_support_byuserID),
     path('getmsg/', views.getmsg),
-    path('getconsult/', views.getconsult)
+    path('getconsult/', views.getconsult),
+    path('updateconsult/', views.updateconsult),
+    path('getconsultbyID/', views.getconsultbyID)
+
 
 ]
