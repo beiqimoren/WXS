@@ -4,7 +4,14 @@ from django.db import models
 class UserInfo(models.Model):
     username = models.CharField(max_length=32)
     password = models.CharField(max_length=64)
-
+    unit = models.CharField(max_length=128)     #单位名称
+    address = models.CharField(max_length=128)  #用户驻地位置
+    boss = models.CharField(max_length=32)      #可选择用户的上级账户
+class AdminUserInfo(models.Model):
+    username = models.CharField(max_length=32)
+    password = models.CharField(max_length=64)
+    unit = models.CharField(max_length=128)    #单位名称
+    area = models.CharField(max_length=1000)   #辖区
 # 装备报修单
 class RepairTable(models.Model):
     userID = models.IntegerField()

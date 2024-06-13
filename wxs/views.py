@@ -175,3 +175,16 @@ def updateconsult(request):
         return HttpResponse("失败")
     except json.JSONDecodeError:
         return JsonResponse({'status': 'error', 'message': 'Invalid JSON'}, status=400)
+@require_http_methods(["POST"])
+@csrf_exempt
+def adminlogin(request):
+    data=(json.loads(request.body))
+    username = data.get('account')
+    password = data.get('password')
+    if (models.AdminUserInfo.objects.filter(username=username).exists()):
+        obj = models.AdminUserInfo.objects.filter(username=username).first()
+        if (obj.password == password):
+            return HttpResponse({"登录成功！"}, status=200)
+        return HttpResponse({"密码错误！"}, status=201)
+    return HttpResponse({"用户不存在！"}, status=202)
+

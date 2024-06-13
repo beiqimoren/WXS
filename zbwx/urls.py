@@ -20,7 +20,7 @@ from django.urls import path
 from wxs import views
 
 urlpatterns = [
-    # path('admin/', admin.site.urls),
+    # 用户APP端接口
     path('index/', views.index),
     path('login/', views.login),
     path('sigup/', views.sigup),
@@ -33,7 +33,9 @@ urlpatterns = [
     path('getmsg/', views.getmsg),
     path('getconsult/', views.getconsult),
     path('updateconsult/', views.updateconsult),
-    path('getconsultbyID/', views.getconsultbyID)
+    path('getconsultbyID/', views.getconsultbyID),
+    #管理员端接口
+    path('adminlogin/', views.adminlogin)
 
 
 ]
