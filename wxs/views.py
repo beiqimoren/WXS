@@ -5,7 +5,7 @@ from django.http import JsonResponse
 from django.shortcuts import render, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
-
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from wxs import models
 
 
@@ -177,14 +177,39 @@ def updateconsult(request):
         return JsonResponse({'status': 'error', 'message': 'Invalid JSON'}, status=400)
 @require_http_methods(["POST"])
 @csrf_exempt
-def adminlogin(request):
+def admin_login(request):
     data=(json.loads(request.body))
     username = data.get('account')
     password = data.get('password')
     if (models.AdminUserInfo.objects.filter(username=username).exists()):
         obj = models.AdminUserInfo.objects.filter(username=username).first()
         if (obj.password == password):
-            return HttpResponse({"登录成功！"}, status=200)
+            return HttpResponse({obj.id}, status=200)
         return HttpResponse({"密码错误！"}, status=201)
     return HttpResponse({"用户不存在！"}, status=202)
 
+
+def admin_getrepair(request):
+    page=request.GET["page"]
+    adminID = request.GET["adminID"]
+    data = {}
+    areas = models.AdminUserInfo.objects.filter(id=adminID).values('area')
+    arealist=((areas[0])['area']).split(',')
+    userids = models.UserInfo.objects.filter(address__in=arealist).values('id')
+    useridlist = []
+    for userid in userids:
+        useridlist.append(userid['id'])
+    data['result'] = list(models.RepairTable.objects.filter(userID__in=useridlist).values())
+    # # 创建Paginator对象，每页显示10个对象
+    # paginator = Paginator(result, 2)
+    # try:
+    #     # 获取指定页码的页面数据
+    #     objects = paginator.page(page)
+    # except PageNotAnInteger:
+    #     # 如果页码不是一个整数，展示第一页
+    #     objects = paginator.page(1)
+    # except EmptyPage:
+    #     # 如果页码超出范围(例如9999)，展示最后一页
+    #     objects = paginator.page(paginator.num_pages)
+    # data['result'] = objects
+    return JsonResponse(data, status=200)

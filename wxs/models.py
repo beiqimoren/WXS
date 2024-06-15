@@ -14,18 +14,18 @@ class AdminUserInfo(models.Model):
     area = models.CharField(max_length=1000)   #辖区
 # 装备报修单
 class RepairTable(models.Model):
-    userID = models.IntegerField()
-    equipment= models.CharField(max_length=64)
-    type = models.CharField(max_length=64)
-    province = models.CharField(max_length=32)
-    city = models.CharField(max_length=32)
-    address = models.CharField(max_length=64)
-    fault = models.CharField(max_length=128)
-    contact = models.CharField(max_length=32)
-    phone = models.CharField(max_length=32)
-    unit = models.CharField(max_length=64)
-    notes = models.CharField(max_length=64)
-    state = models.CharField(max_length=32)
+    userID = models.IntegerField()               #用户ID
+    equipment= models.CharField(max_length=64)   #装备名称
+    type = models.CharField(max_length=64)       #装备型号
+    province = models.CharField(max_length=32)   #装备所在地省
+    city = models.CharField(max_length=32)       #市
+    address = models.CharField(max_length=64)    #详细地址
+    fault = models.CharField(max_length=128)     #故障现象
+    contact = models.CharField(max_length=32)    #联系人
+    phone = models.CharField(max_length=32)      #联系电话
+    unit = models.CharField(max_length=64)       #单位名称
+    notes = models.CharField(max_length=64)      #备注
+    state = models.CharField(max_length=256)      #状态或回执
 # 技术支援申请单
 class SupportTable(models.Model):
     userID = models.IntegerField()
@@ -53,3 +53,4 @@ class MyConsult(models.Model):
     userID = models.IntegerField()
     title = models.CharField(max_length=256)
     contentlist = models.CharField(max_length=9999)
+
