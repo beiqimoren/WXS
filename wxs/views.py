@@ -190,7 +190,8 @@ def admin_login(request):
 
 
 def admin_getrepair(request):
-    page=request.GET["page"]
+    state = request.GET["state"]
+    page = request.GET["page"]
     adminID = request.GET["adminID"]
     data = {}
     areas = models.AdminUserInfo.objects.filter(id=adminID).values('area')
@@ -199,17 +200,15 @@ def admin_getrepair(request):
     useridlist = []
     for userid in userids:
         useridlist.append(userid['id'])
-    data['result'] = list(models.RepairTable.objects.filter(userID__in=useridlist).values())
-    # # 创建Paginator对象，每页显示10个对象
-    # paginator = Paginator(result, 2)
-    # try:
-    #     # 获取指定页码的页面数据
-    #     objects = paginator.page(page)
-    # except PageNotAnInteger:
-    #     # 如果页码不是一个整数，展示第一页
-    #     objects = paginator.page(1)
-    # except EmptyPage:
-    #     # 如果页码超出范围(例如9999)，展示最后一页
-    #     objects = paginator.page(paginator.num_pages)
-    # data['result'] = objects
+    if state=='':
+        data['result'] = list(models.RepairTable.objects.filter(userID__in=useridlist).values())
+        return JsonResponse(data, status=200)
+    data['result'] = list(models.RepairTable.objects.filter(userID__in=useridlist,state=state).values())
+    return JsonResponse(data, status=200)
+
+
+def admin_viewrepair(request):
+    ID = request.GET["id"]
+    data = {}
+    data['result'] = list(models.RepairTable.objects.filter(id=ID).values())
     return JsonResponse(data, status=200)

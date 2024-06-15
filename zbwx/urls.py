@@ -37,6 +37,8 @@ urlpatterns = [
     #后台管理端接口
     path('admin_login/', views.admin_login),
     path('admin_getrepair/', views.admin_getrepair),
+    path('admin_viewrepair/', views.admin_viewrepair),
+
 
 
 

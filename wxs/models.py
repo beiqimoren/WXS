@@ -25,7 +25,7 @@ class RepairTable(models.Model):
     phone = models.CharField(max_length=32)      #联系电话
     unit = models.CharField(max_length=64)       #单位名称
     notes = models.CharField(max_length=64)      #备注
-    state = models.CharField(max_length=256)      #状态或回执
+    state = models.CharField(max_length=32)      #状态或回执
 # 技术支援申请单
 class SupportTable(models.Model):
     userID = models.IntegerField()
