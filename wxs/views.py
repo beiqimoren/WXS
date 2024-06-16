@@ -212,3 +212,11 @@ def admin_viewrepair(request):
     data = {}
     data['result'] = list(models.RepairTable.objects.filter(id=ID).values())
     return JsonResponse(data, status=200)
+
+
+def admin_changerepairstate(request):
+    ID = request.GET["id"]
+    state = request.GET["state"]
+    if models.RepairTable.objects.filter(id=ID).update(state=state):
+        return HttpResponse("修改成功！",status=200)
+    return HttpResponse("修改失败！", status=400)
