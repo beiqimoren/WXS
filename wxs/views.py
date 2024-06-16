@@ -1,12 +1,15 @@
 import json
 
+from django.contrib.postgres import serializers
 from django.forms import model_to_dict
-from django.http import JsonResponse
 from django.shortcuts import render, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_http_methods
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from wxs import models
+from django.http import JsonResponse
+from django.views.decorators.http import require_http_methods
+from django.core import serializers
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+import json
 
 
 # Create your views here.
@@ -193,7 +196,6 @@ def admin_getrepair(request):
     state = request.GET["state"]
     page = request.GET["page"]
     adminID = request.GET["adminID"]
-    data = {}
     areas = models.AdminUserInfo.objects.filter(id=adminID).values('area')
     arealist=((areas[0])['area']).split(',')
     userids = models.UserInfo.objects.filter(address__in=arealist).values('id')
@@ -201,11 +203,35 @@ def admin_getrepair(request):
     for userid in userids:
         useridlist.append(userid['id'])
     if state=='':
-        data['result'] = list(models.RepairTable.objects.filter(userID__in=useridlist).values())
-        return JsonResponse(data, status=200)
-    data['result'] = list(models.RepairTable.objects.filter(userID__in=useridlist,state=state).values())
+        datalist = models.RepairTable.objects.filter(userID__in=useridlist)
+    else:
+        datalist = models.RepairTable.objects.filter(userID__in=useridlist,state=state)
+    paginator = Paginator(datalist, 10)
+    try:
+        results = paginator.page(page)
+    except PageNotAnInteger:
+        results = paginator.page(1)
+    except EmptyPage:
+        results = paginator.page(paginator.num_pages)
+    data = {'result': []}
+    for item in results.object_list:
+        data['result'].append({
+            'id': item.id,
+            'userID' : item.userID,
+            'equipment': item.equipment,
+            'type' : item.type,
+            'province' : item.province,
+            'city' : item.city,
+            'address' : item.address,
+            'fault': item.fault,
+            'contact' : item.contact,
+            'phone' : item.phone,
+            'unit': item.unit,
+            'notes' : item.notes,
+            'state' : item.state
+        })
+    data['total'] = paginator.count
     return JsonResponse(data, status=200)
-
 
 def admin_viewrepair(request):
     ID = request.GET["id"]
@@ -226,7 +252,6 @@ def admin_getsupport(request):
     state = request.GET["state"]
     page = request.GET["page"]
     adminID = request.GET["adminID"]
-    data = {}
     areas = models.AdminUserInfo.objects.filter(id=adminID).values('area')
     arealist = ((areas[0])['area']).split(',')
     userids = models.UserInfo.objects.filter(address__in=arealist).values('id')
@@ -234,9 +259,33 @@ def admin_getsupport(request):
     for userid in userids:
         useridlist.append(userid['id'])
     if state == '':
-        data['result'] = list(models.SupportTable.objects.filter(userID__in=useridlist).values())
-        return JsonResponse(data, status=200)
-    data['result'] = list(models.SupportTable.objects.filter(userID__in=useridlist, state=state).values())
+        datalist = models.SupportTable.objects.filter(userID__in=useridlist)
+    else:
+        datalist = models.SupportTable.objects.filter(userID__in=useridlist, state=state)
+    paginator = Paginator(datalist, 10)
+    try:
+        results = paginator.page(page)
+    except PageNotAnInteger:
+        results = paginator.page(1)
+    except EmptyPage:
+        results = paginator.page(paginator.num_pages)
+    data = {'result': []}
+    for item in results.object_list:
+        data['result'].append({
+            'id': item.id,
+            'userID': item.userID,
+            'date': item.date,
+            'province': item.province,
+            'city': item.city,
+            'address': item.address,
+            'thing': item.thing,
+            'contact': item.contact,
+            'phone': item.phone,
+            'unit': item.unit,
+            'notes': item.notes,
+            'state': item.state
+        })
+    data['total'] = paginator.count
     return JsonResponse(data, status=200)
 
 
