@@ -54,3 +54,8 @@ class MyConsult(models.Model):
     title = models.CharField(max_length=256)
     contentlist = models.CharField(max_length=9999)
 
+class MyConsultMsg(models.Model):
+    consultID = models.IntegerField()
+    type = models.IntegerField()
+    content = models.CharField(max_length=256)
+
