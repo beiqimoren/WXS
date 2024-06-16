@@ -220,3 +220,36 @@ def admin_changerepairstate(request):
     if models.RepairTable.objects.filter(id=ID).update(state=state):
         return HttpResponse("修改成功！",status=200)
     return HttpResponse("修改失败！", status=400)
+
+
+def admin_getsupport(request):
+    state = request.GET["state"]
+    page = request.GET["page"]
+    adminID = request.GET["adminID"]
+    data = {}
+    areas = models.AdminUserInfo.objects.filter(id=adminID).values('area')
+    arealist = ((areas[0])['area']).split(',')
+    userids = models.UserInfo.objects.filter(address__in=arealist).values('id')
+    useridlist = []
+    for userid in userids:
+        useridlist.append(userid['id'])
+    if state == '':
+        data['result'] = list(models.SupportTable.objects.filter(userID__in=useridlist).values())
+        return JsonResponse(data, status=200)
+    data['result'] = list(models.SupportTable.objects.filter(userID__in=useridlist, state=state).values())
+    return JsonResponse(data, status=200)
+
+
+def admin_viewsupport(request):
+    ID = request.GET["id"]
+    data = {}
+    data['result'] = list(models.SupportTable.objects.filter(id=ID).values())
+    return JsonResponse(data, status=200)
+
+
+def admin_changesupportstate(request):
+    ID = request.GET["id"]
+    state = request.GET["state"]
+    if models.SupportTable.objects.filter(id=ID).update(state=state):
+        return HttpResponse("修改成功！", status=200)
+    return HttpResponse("修改失败！", status=400)

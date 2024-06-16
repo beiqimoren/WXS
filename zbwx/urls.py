@@ -39,6 +39,9 @@ urlpatterns = [
     path('admin_getrepair/', views.admin_getrepair),
     path('admin_viewrepair/', views.admin_viewrepair),
     path('admin_changerepairstate/', views.admin_changerepairstate),
+    path('admin_getsupport/', views.admin_getsupport),
+    path('admin_viewsupport/', views.admin_viewsupport),
+    path('admin_changesupportstate/', views.admin_changesupportstate),
 
 
 
