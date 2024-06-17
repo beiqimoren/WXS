@@ -39,19 +39,34 @@ def login(request):
 
 
 # 注册用户
+@require_http_methods(["POST"])
+@csrf_exempt
 def sigup(request):
-    username = request.GET['param']
-    password = request.GET['param1']
-    if models.UserInfo.objects.filter(username=username).exists():
+    try:
+        data = json.loads(request.body)
+        if models.UserInfo.objects.filter(username=data.get("username")).exists():
+            return JsonResponse({
+                'state': "该账号已注册",
+                'userID': 0
+            })
+        if models.UserInfo.objects.create(username=data.get("username"),
+                                       password=data.get("password"),
+                                       province=data.get("province"),
+                                       city=data.get("city"),
+                                       unit=data.get("unit"),
+                                       address=data.get("city"),
+                                       boss=''
+                                          ):
+            return JsonResponse({
+                'state': "注册成功",
+                'username': 0
+            })
         return JsonResponse({
-            'state': "该账号已注册",
-            'userID': 0
+            'state': "注册失败",
+            'username': 0
         })
-    models.UserInfo.objects.create(username=username, password=password)
-    return JsonResponse({
-        'state': "注册成功",
-        'username': 0
-    })
+    except json.JSONDecodeError:
+        return JsonResponse({'status': 'error', 'message': 'Invalid JSON'}, status=400)
 
 
 @require_http_methods(["POST"])
@@ -140,12 +155,11 @@ def getmsg(request):
 def addconsult(request):
     try:
         data = json.loads(request.body)
-        if models.MyConsult.objects.create(userID=data.get("userID"),
-                                           adminID=data.get("adminID"),
-                                           title=data.get("title"),
-                                           content=data.get("content")):
-            return HttpResponse("成功")
-        return HttpResponse("失败")
+        myconsult = models.MyConsult(userID=data.get("userID"), adminID=data.get("adminID"), title=data.get("title"), contentlist=data.get("content"))
+        myconsult.save()
+        myconsultmsg = models.MyConsultMsg(consultID=myconsult.id, type=0, content=data.get("content"))
+        myconsultmsg.save()
+        return HttpResponse("成功")
     except json.JSONDecodeError:
         return JsonResponse({'status': 'error', 'message': 'Invalid JSON'}, status=400)
 
@@ -160,10 +174,10 @@ def getconsult(request):
     return JsonResponse(data)
 
 def getconsultbyID(request):
-    ID = int(request.GET['param'])
+    consultID = int(request.GET['param'])
     data = {}
-    if models.MyConsult.objects.filter(id=ID).exists():
-        data['myconsultbyID'] = list(models.MyConsult.objects.filter(id=ID).values())
+    if models.MyConsultMsg.objects.filter(consultID=consultID).exists():
+        data['myconsultbyID'] = list(models.MyConsultMsg.objects.filter(consultID=consultID).order_by('id').values())
         return JsonResponse(data)
     data['myconsultbyID'] = "没有数据"
     return JsonResponse(data)
@@ -173,7 +187,7 @@ def getconsultbyID(request):
 def updateconsult(request):
     try:
         data = json.loads(request.body)
-        if models.MyConsult.objects.filter(id=data.get("consultID")).update(contentlist=data.get("contentlist")):
+        if models.MyConsultMsg.objects.create(consultID=data.get("consultID"), type=data.get("type"), content=data.get("content")):
             return HttpResponse("成功")
         return HttpResponse("失败")
     except json.JSONDecodeError:
@@ -198,7 +212,7 @@ def admin_getrepair(request):
     adminID = request.GET["adminID"]
     areas = models.AdminUserInfo.objects.filter(id=adminID).values('area')
     arealist=((areas[0])['area']).split(',')
-    userids = models.UserInfo.objects.filter(address__in=arealist).values('id')
+    userids = models.UserInfo.objects.filter(city__in=arealist).values('id')
     useridlist = []
     for userid in userids:
         useridlist.append(userid['id'])
@@ -254,7 +268,7 @@ def admin_getsupport(request):
     adminID = request.GET["adminID"]
     areas = models.AdminUserInfo.objects.filter(id=adminID).values('area')
     arealist = ((areas[0])['area']).split(',')
-    userids = models.UserInfo.objects.filter(address__in=arealist).values('id')
+    userids = models.UserInfo.objects.filter(city__in=arealist).values('id')
     useridlist = []
     for userid in userids:
         useridlist.append(userid['id'])
